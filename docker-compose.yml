@@ -1,0 +1,160 @@
+services:
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Gateway — Traefik
+  # Única porta pública exposta: 80 (HTTP) e 443 (HTTPS).
+  # O dashboard interno fica acessível somente dentro da rede piaca-net.
+  # ─────────────────────────────────────────────────────────────────────────────
+  traefik:
+    image: traefik:v3.1
+    container_name: piaca-traefik
+    restart: unless-stopped
+    command:
+      - "--log.level=INFO"
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=piaca-net"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./piaca-infra/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./piaca-infra/traefik/certs:/certs:ro
+    networks:
+      - piaca-net
+    labels:
+      - "traefik.enable=true"
+      # Dashboard — acesso via https://traefik.piaca.localhost (somente interna)
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.piaca.localhost`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Frontend
+  # Rota: https://piaca.localhost  →  piaca-frontend:3000
+  # SEM porta pública direta.
+  # ─────────────────────────────────────────────────────────────────────────────
+  piaca-frontend:
+    build:
+      context: ./piaca-frontend
+      dockerfile: Dockerfile
+    container_name: piaca-frontend
+    restart: unless-stopped
+    networks:
+      - piaca-net
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`piaca.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Grupo A — Core & Auth
+  # Rota: https://api.piaca.localhost/auth/*  e  /users/*  e  /profiles/*
+  # ─────────────────────────────────────────────────────────────────────────────
+  piaca-core-auth:
+    build:
+      context: ./piaca-backend/group-a-core-auth
+      dockerfile: Dockerfile
+    container_name: piaca-core-auth
+    restart: unless-stopped
+    networks:
+      - piaca-net
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.core-auth.rule=Host(`api.piaca.localhost`) && PathPrefix(`/auth`, `/users`, `/profiles`, `/audit-logs`)"
+      - "traefik.http.routers.core-auth.entrypoints=websecure"
+      - "traefik.http.routers.core-auth.tls=true"
+      - "traefik.http.services.core-auth.loadbalancer.server.port=3001"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Grupo B — Gestão de Pets
+  # Rota: https://api.piaca.localhost/animals/*
+  # ─────────────────────────────────────────────────────────────────────────────
+  piaca-pet-management:
+    build:
+      context: ./piaca-backend/group-b-pet-management
+      dockerfile: Dockerfile
+    container_name: piaca-pet-management
+    restart: unless-stopped
+    networks:
+      - piaca-net
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pet-management.rule=Host(`api.piaca.localhost`) && PathPrefix(`/animals`)"
+      - "traefik.http.routers.pet-management.entrypoints=websecure"
+      - "traefik.http.routers.pet-management.tls=true"
+      - "traefik.http.services.pet-management.loadbalancer.server.port=3002"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Grupo C — Adoção & IA
+  # Rota: https://api.piaca.localhost/adoption/*
+  # ─────────────────────────────────────────────────────────────────────────────
+  piaca-adoption-ai:
+    build:
+      context: ./piaca-backend/group-c-adoption-ai
+      dockerfile: Dockerfile
+    container_name: piaca-adoption-ai
+    restart: unless-stopped
+    networks:
+      - piaca-net
+    environment:
+      - PORT=3003
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adoption-ai.rule=Host(`api.piaca.localhost`) && PathPrefix(`/adoption`)"
+      - "traefik.http.routers.adoption-ai.entrypoints=websecure"
+      - "traefik.http.routers.adoption-ai.tls=true"
+      - "traefik.http.services.adoption-ai.loadbalancer.server.port=3003"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Grupo D — Apadrinhamento
+  # Rota: https://api.piaca.localhost/godparenthood/*  e  /godparents/*
+  # ─────────────────────────────────────────────────────────────────────────────
+  piaca-godparenthood:
+    build:
+      context: ./piaca-backend/group-d-godparenthood
+      dockerfile: Dockerfile
+    container_name: piaca-godparenthood
+    restart: unless-stopped
+    networks:
+      - piaca-net
+    environment:
+      - PORT=3004
+      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.godparenthood.rule=Host(`api.piaca.localhost`) && PathPrefix(`/godparenthood`, `/godparents`)"
+      - "traefik.http.routers.godparenthood.entrypoints=websecure"
+      - "traefik.http.routers.godparenthood.tls=true"
+      - "traefik.http.services.godparenthood.loadbalancer.server.port=3004"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Rede interna — nenhum serviço de negócio expõe porta pública diretamente.
+# Todo o tráfego entra pelo Traefik.
+# ─────────────────────────────────────────────────────────────────────────────
+networks:
+  piaca-net:
+    driver: bridge
+    name: piaca-net

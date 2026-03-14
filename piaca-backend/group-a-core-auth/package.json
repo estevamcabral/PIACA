@@ -1,0 +1,13 @@
+{
+  "name": "@piaca/core-auth",
+  "version": "1.0.0",
+  "description": "PIACA - Grupo A: Core & Auth (Gestão de Usuários, Autenticação, Perfis, Logs de Auditoria)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@piaca/pet-management",
+  "version": "1.0.0",
+  "description": "PIACA - Grupo B: Gestão de Pets (Cadastro de Animais e Histórico de Ocorrências)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
