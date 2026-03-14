@@ -1,0 +1,13 @@
+{
+  "name": "@piaca/adoption-ai",
+  "version": "1.0.0",
+  "description": "PIACA - Grupo C: Módulo de Adoção & IA (Fluxo de Interesse em Adoção e Relatório de Compatibilidade via LLM)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
