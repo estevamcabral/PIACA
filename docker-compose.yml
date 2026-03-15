@@ -1,5 +1,6 @@
-services:
+version: "3.9"
 
+services:
   traefik:
     image: traefik:v3.1
     container_name: piaca-traefik
@@ -19,7 +20,6 @@ services:
     networks:
       - piaca-net
 
-
   piaca-frontend:
     build:
       context: ./piaca-frontend
@@ -33,7 +33,7 @@ services:
 
   example-module:
     build:
-      context: ./example-module
+      context: ./piaca-backend/example-module
       dockerfile: Dockerfile
     container_name: example-module
     restart: unless-stopped
@@ -59,7 +59,6 @@ services:
       - traefik.http.routers.core-auth.entrypoints=web
       - traefik.http.services.core-auth.loadbalancer.server.port=3001
 
-
   piaca-pet-management:
     build:
       context: ./piaca-backend/group-b-pet-management
@@ -73,7 +72,6 @@ services:
       - traefik.http.routers.pet-management.rule=PathPrefix(`/animals`)
       - traefik.http.routers.pet-management.entrypoints=web
       - traefik.http.services.pet-management.loadbalancer.server.port=3002
-
 
   piaca-adoption-ai:
     build:
@@ -89,7 +87,6 @@ services:
       - traefik.http.routers.adoption-ai.entrypoints=web
       - traefik.http.services.adoption-ai.loadbalancer.server.port=3003
 
-
   piaca-godparenthood:
     build:
       context: ./piaca-backend/group-d-godparenthood
@@ -103,7 +100,6 @@ services:
       - traefik.http.routers.godparenthood.rule=PathPrefix(`/godparenthood`)
       - traefik.http.routers.godparenthood.entrypoints=web
       - traefik.http.services.godparenthood.loadbalancer.server.port=3004
-
 
 networks:
   piaca-net:
