@@ -1,4 +1,0 @@
-# TLS certificates (never commit private keys or certs)
-*.crt
-*.key
-*.pem
