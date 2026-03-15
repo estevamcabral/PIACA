@@ -20,16 +20,16 @@ services:
     networks:
       - piaca-net
 
-  piaca-frontend:
-    build:
-      context: ./piaca-frontend
-      dockerfile: Dockerfile
-    container_name: piaca-frontend
-    restart: unless-stopped
-    ports:
-      - 3000:3000
-    networks:
-      - piaca-net
+  # piaca-frontend:
+  #   build:
+  #     context: ./piaca-frontend
+  #     dockerfile: Dockerfile
+  #   container_name: piaca-frontend
+  #   restart: unless-stopped
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - piaca-net
 
   example-module:
     build:
@@ -45,61 +45,61 @@ services:
       - traefik.http.routers.example.entrypoints=web
       - traefik.http.services.example.loadbalancer.server.port=3005
 
-  piaca-core-auth:
-    build:
-      context: ./piaca-backend/group-a-core-auth
-      dockerfile: Dockerfile
-    container_name: piaca-core-auth
-    restart: unless-stopped
-    networks:
-      - piaca-net
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.core-auth.rule=PathPrefix(`/auth`)
-      - traefik.http.routers.core-auth.entrypoints=web
-      - traefik.http.services.core-auth.loadbalancer.server.port=3001
+  # piaca-core-auth:
+  #   build:
+  #     context: ./piaca-backend/group-a-core-auth
+  #     dockerfile: Dockerfile
+  #   container_name: piaca-core-auth
+  #   restart: unless-stopped
+  #   networks:
+  #     - piaca-net
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.core-auth.rule=PathPrefix(`/auth`)
+  #     - traefik.http.routers.core-auth.entrypoints=web
+  #     - traefik.http.services.core-auth.loadbalancer.server.port=3001
 
-  piaca-pet-management:
-    build:
-      context: ./piaca-backend/group-b-pet-management
-      dockerfile: Dockerfile
-    container_name: piaca-pet-management
-    restart: unless-stopped
-    networks:
-      - piaca-net
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.pet-management.rule=PathPrefix(`/animals`)
-      - traefik.http.routers.pet-management.entrypoints=web
-      - traefik.http.services.pet-management.loadbalancer.server.port=3002
+  # piaca-pet-management:
+  #   build:
+  #     context: ./piaca-backend/group-b-pet-management
+  #     dockerfile: Dockerfile
+  #   container_name: piaca-pet-management
+  #   restart: unless-stopped
+  #   networks:
+  #     - piaca-net
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.pet-management.rule=PathPrefix(`/animals`)
+  #     - traefik.http.routers.pet-management.entrypoints=web
+  #     - traefik.http.services.pet-management.loadbalancer.server.port=3002
 
-  piaca-adoption-ai:
-    build:
-      context: ./piaca-backend/group-c-adoption-ai
-      dockerfile: Dockerfile
-    container_name: piaca-adoption-ai
-    restart: unless-stopped
-    networks:
-      - piaca-net
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.adoption-ai.rule=PathPrefix(`/adoption`)
-      - traefik.http.routers.adoption-ai.entrypoints=web
-      - traefik.http.services.adoption-ai.loadbalancer.server.port=3003
+  # piaca-adoption-ai:
+  #   build:
+  #     context: ./piaca-backend/group-c-adoption-ai
+  #     dockerfile: Dockerfile
+  #   container_name: piaca-adoption-ai
+  #   restart: unless-stopped
+  #   networks:
+  #     - piaca-net
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.adoption-ai.rule=PathPrefix(`/adoption`)
+  #     - traefik.http.routers.adoption-ai.entrypoints=web
+  #     - traefik.http.services.adoption-ai.loadbalancer.server.port=3003
 
-  piaca-godparenthood:
-    build:
-      context: ./piaca-backend/group-d-godparenthood
-      dockerfile: Dockerfile
-    container_name: piaca-godparenthood
-    restart: unless-stopped
-    networks:
-      - piaca-net
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.godparenthood.rule=PathPrefix(`/godparenthood`)
-      - traefik.http.routers.godparenthood.entrypoints=web
-      - traefik.http.services.godparenthood.loadbalancer.server.port=3004
+  # piaca-godparenthood:
+  #   build:
+  #     context: ./piaca-backend/group-d-godparenthood
+  #     dockerfile: Dockerfile
+  #   container_name: piaca-godparenthood
+  #   restart: unless-stopped
+  #   networks:
+  #     - piaca-net
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.godparenthood.rule=PathPrefix(`/godparenthood`)
+  #     - traefik.http.routers.godparenthood.entrypoints=web
+  #     - traefik.http.services.godparenthood.loadbalancer.server.port=3004
 
 networks:
   piaca-net:
