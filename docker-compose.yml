@@ -31,6 +31,19 @@ services:
     networks:
       - piaca-net
 
+  example-module:
+    build:
+      context: ./example-module
+      dockerfile: Dockerfile
+    container_name: example-module
+    restart: unless-stopped
+    networks:
+      - piaca-net
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.example.rule=PathPrefix(`/example`)
+      - traefik.http.routers.example.entrypoints=web
+      - traefik.http.services.example.loadbalancer.server.port=3005
 
   piaca-core-auth:
     build:
