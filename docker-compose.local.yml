@@ -20,12 +20,29 @@ services:
     networks:
       - piaca-net
 
+  postgres:
+    image: postgres:16
+    container_name: piaca-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: piaca_db
+      POSTGRES_USER: piaca_user
+      POSTGRES_PASSWORD: piaca_pass
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - piaca-net
+
   flyway:
     image: flyway/flyway:10
     container_name: piaca-flyway
-    command: -url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} -user=${DB_USER} -password=${DB_PASSWORD} -locations=filesystem:/flyway/sql migrate
+    command: -url=jdbc:postgresql://postgres:5432/piaca_db -user=piaca_user -password=piaca_pass -locations=filesystem:/flyway/sql migrate
     volumes:
       - ./piaca-backend/migrations:/flyway/sql
+    depends_on:
+      - postgres
     networks:
       - piaca-net
 
@@ -36,11 +53,11 @@ services:
     container_name: example-module
     restart: unless-stopped
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: piaca_db
+      DB_USER: piaca_user
+      DB_PASSWORD: piaca_pass
     networks:
       - piaca-net
     labels:
@@ -56,11 +73,11 @@ services:
   #   container_name: piaca-core-auth
   #   restart: unless-stopped
   #   environment:
-  #     DB_HOST: ${DB_HOST}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USER: ${DB_USER}
-  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_NAME: piaca_db
+  #     DB_USER: piaca_user
+  #     DB_PASSWORD: piaca_pass
   #   networks:
   #     - piaca-net
   #   labels:
@@ -76,11 +93,11 @@ services:
   #   container_name: piaca-pet-management
   #   restart: unless-stopped
   #   environment:
-  #     DB_HOST: ${DB_HOST}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USER: ${DB_USER}
-  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_NAME: piaca_db
+  #     DB_USER: piaca_user
+  #     DB_PASSWORD: piaca_pass
   #   networks:
   #     - piaca-net
   #   labels:
@@ -96,11 +113,11 @@ services:
   #   container_name: piaca-adoption-ai
   #   restart: unless-stopped
   #   environment:
-  #     DB_HOST: ${DB_HOST}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USER: ${DB_USER}
-  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_NAME: piaca_db
+  #     DB_USER: piaca_user
+  #     DB_PASSWORD: piaca_pass
   #   networks:
   #     - piaca-net
   #   labels:
@@ -116,11 +133,11 @@ services:
   #   container_name: piaca-godparenthood
   #   restart: unless-stopped
   #   environment:
-  #     DB_HOST: ${DB_HOST}
-  #     DB_PORT: ${DB_PORT}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USER: ${DB_USER}
-  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_NAME: piaca_db
+  #     DB_USER: piaca_user
+  #     DB_PASSWORD: piaca_pass
   #   networks:
   #     - piaca-net
   #   labels:
@@ -132,3 +149,6 @@ services:
 networks:
   piaca-net:
     driver: bridge
+
+volumes:
+  pgdata:
