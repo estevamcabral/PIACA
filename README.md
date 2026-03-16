@@ -68,9 +68,8 @@ Cada grupo possui um modulo dedicado dentro de `piaca-backend/`:
 Cada modulo deve seguir a mesma ideia base:
 
 - possuir seu proprio `Dockerfile`.
-- expor uma porta HTTP interna do container.
+- iniciar seu app nas portas definidas para cada grupo (Exemplo: `traefik.http.services.core-auth.loadbalancer.server.port=3001`).
 - consumir o banco pelas variaveis `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` e `DB_PASSWORD`.
-- ser registrado no Traefik por labels e por um prefixo de rota.
 
 ## Como Cada Grupo Pode Usar Seu Modulo
 
@@ -78,11 +77,10 @@ Cada grupo trabalha de forma isolada no proprio diretorio dentro de `piaca-backe
 
 1. implementar o codigo do modulo no seu diretorio.
 2. garantir que o `Dockerfile` do modulo instala as dependencias e inicia a aplicacao.
-3. descomentar o servico correspondente em `docker-compose.local.yml`.
+3. descomentar o servico correspondente em `docker-compose.local.yml e docker-compose.yml`.
 4. manter as variaveis de banco apontando para o servico `postgres` do compose local.
-5. definir a rota de acesso no Traefik pelas labels do servico.
 
-Rotas previstas no compose local:
+Rotas previstas para direcionamento (quando acessar esses endpoints, vai direcionar pro micro-servico de cada grupo correspondente):
 
 - grupo A: `/auth`
 - grupo B: `/animals`
