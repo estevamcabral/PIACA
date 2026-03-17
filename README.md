@@ -114,6 +114,7 @@ Na raiz do repositorio:
 
 ```bash
 docker compose -f docker-compose.local.yml up -d --build
+docker volume create pgdata
 ```
 
 Esse comando:
@@ -121,6 +122,7 @@ Esse comando:
 - constroi as imagens locais.
 - sobe Traefik, Postgres, Flyway e os modulos habilitados.
 - aplica as migrations do banco.
+- cria volume no docker (pros dados do banco nao sumirem)
 
 ### 3. Acessar os servicos
 
