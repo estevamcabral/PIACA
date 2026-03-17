@@ -113,8 +113,8 @@ Instale:
 Na raiz do repositorio:
 
 ```bash
-docker compose -f docker-compose.local.yml up -d --build
 docker volume create pgdata
+docker compose -f docker-compose.local.yml up -d --build
 ```
 
 Esse comando:
